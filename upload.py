@@ -102,7 +102,7 @@ def initialize_upload(youtube, options):
         )
     )
 
-  # Call the API's videos.insert method to create and upload the video.
+    # Call the API's videos.insert method to create and upload the video.
     insert_request = youtube.videos().insert(
         part=",".join(body.keys()),
         body=body,
@@ -118,9 +118,9 @@ def initialize_upload(youtube, options):
         # running on App Engine, you should set the chunksize to something like
         # 1024 * 1024 (1 megabyte).
         media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
-  )
+    )
 
-  resumable_upload(insert_request)
+    resumable_upload(insert_request)
 
 # This method implements an exponential backoff strategy to resume a
 # failed upload.
