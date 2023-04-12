@@ -1,0 +1,1 @@
+python upload.py --file="test.mp4" --title="Testing api upload" --description="lofi alien" --keywords="lofi,chill,alien" --category="10" --privacyStatus="unlisted"
