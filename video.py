@@ -24,11 +24,11 @@ def add_static_image_to_audio(image_path, audio_path):
 
 
 if __name__ == "__main__":
-    image_path = "alien.jpeg"
-    audio_path = "lofi.mp3"
-    output_path = "test.mp4"
+    image_path = "images/PapitaFrita_an_alien_artificial_intelligence_that_can_do_magic.png"
+    audio_path = "music/moods_dreamy_track.mp3"
+    output_path = "renders/test_track.mp4"
 
-    total_duration = 5 * 60.  #  seconds
+    total_duration = 120 * 60.  #  seconds
 
     # create the audio clip object
     original_audio_clip = AudioFileClip(audio_path)
