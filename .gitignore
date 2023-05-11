@@ -1,10 +1,15 @@
 # My ignores
 *.mp4
 *.mp3
+*.wav
 *.png
 *.jpg
 *.jpeg
 *.json
+effects/
+images/
+music/
+renders/
 
 
 # Byte-compiled / optimized / DLL files
