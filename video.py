@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from PIL import Image
 
@@ -77,6 +78,23 @@ def merge_audio_and_video(audio, video, duration):
     return new_video
 
 
+def move_file(source, destination):
+    """
+    Move a file from source to destination.
+    
+    Args:
+        source (str): Path to the file to be moved.
+        destination (str): Path to the directory where the file will be moved.
+    
+    Returns:
+        None
+    """
+    source_path = Path(source)
+    destination_path = Path(destination)
+    
+    source_path.rename(destination_path / source_path.name)
+
+
 # ============================================================================
 # MAIN FUNCTIONS
 # ============================================================================
@@ -145,13 +163,37 @@ def add_audio_to_image(image_path, audio_path, output_path, resolution="FullHD",
 
 
 if __name__ == "__main__":
-    image_path = "images/Alien Ambient/Upscaled/a_cozy_alien_forest_with_vibrant_but_relaxing_colors__it_is_raining__amazing_details_--aspect_16_9_--q_2_--v_5-pXsyR9oOu-transformed.jpeg"
-    audio_path = "music/Alien Ambient/Elegidas/moods heroic cinematic (26896cc0a6944be693ba5643d0555e43).wav"
-    output_path = "renders/Alien Ambient/test.mp4"
-    duration_min = 2.
+    
+    image_name = "PapitaFrita_in_the_image_6277cad1-0c92-4f00-877d-e54cdec22f30-transformed.jpeg"
+    music_name = "moods heroic cinematic remix (32039f4169904780bb5017619d581e2a).wav"
+    render_name = "alien_ambient_021.mp4"
 
-    add_audio_to_image(image_path, audio_path, output_path, duration_min=duration_min)
+    duration_min = 120.
+    
+    
+    PATH = Path(os.path.abspath(os.path.dirname(__file__)))
+    source_image_path = PATH / "images" / "Alien Ambient" / "Upscaled" 
+    source_music_path = PATH / "music" / "Alien Ambient" / "Elegidas" 
+    used_image_path = PATH / "images" / "Alien Ambient" / "Upscaled" / "Usadas"
+    used_music_path = PATH / "music" / "Alien Ambient" / "Elegidas" / "Usadas"
+    render_path = PATH / "renders" / "Alien Ambient"
 
+    # Render video
+    add_audio_to_image(
+        str(source_image_path / image_name), 
+        str(source_music_path / music_name), 
+        str(render_path / render_name), 
+        duration_min=duration_min)
+
+    # Move files to used path, including the Mubert license pdf
+    move_file(source_image_path / image_name, used_image_path)
+    move_file(source_music_path / music_name, used_music_path)
+    # Move the license together with the music
+    move_file(str(source_music_path / music_name).replace(".wav", ".pdf"), used_music_path)
+
+
+    # Particle Effects
+    #
     # video_path = None #"renders/test_track_short.mp4"
     # effect_path = None #"effects/particles_9s_1080p.mkv"
     # add_video_to_image(video_path, audio_path, output_path)
