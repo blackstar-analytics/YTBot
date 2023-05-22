@@ -52,7 +52,8 @@ def overlay_effect(image_clip, effect_clip, background_color=None, effect_color=
     """Add effect to an image."""
     if background_color is None:
         # TODO: Detect background color automatically
-        background_color = [1, 141, 34]
+        background_color = [0, 1, 0]
+        #background_color = [1, 141, 34]
 
     effect_video = mask_video_background(
         effect_clip, 
@@ -164,36 +165,57 @@ def add_audio_to_image(image_path, audio_path, output_path, resolution="FullHD",
 
 if __name__ == "__main__":
     
-    image_name = "PapitaFrita_in_the_image_6277cad1-0c92-4f00-877d-e54cdec22f30-transformed.jpeg"
-    music_name = "moods heroic cinematic remix (32039f4169904780bb5017619d581e2a).wav"
-    render_name = "alien_ambient_021.mp4"
+    image_name = "PapitaFrita_a_landscape_in_an_alien_and_spiritual_planet_seen_f_036c620c-4a88-4c3b-96fb-259b2acf88eb-transformed.jpeg"
+    music_name = "Sing_for_Absolution.mp3"
+    effect_name = "particulas_green_1080.mp4"
+    effect_video_name = "temp_prueba3.mp4"
+    render_name = "prueba3.mp4"
 
-    duration_min = 120.
+    duration_min = 1.
     
-    
+    channel_1 = "Ethereal_Passenger"
+    channel_2 = "Alien Ambient"
+
     PATH = Path(os.path.abspath(os.path.dirname(__file__)))
-    source_image_path = PATH / "images" / "Alien Ambient" / "Upscaled" 
-    source_music_path = PATH / "music" / "Alien Ambient" / "Elegidas" 
-    used_image_path = PATH / "images" / "Alien Ambient" / "Upscaled" / "Usadas"
-    used_music_path = PATH / "music" / "Alien Ambient" / "Elegidas" / "Usadas"
-    render_path = PATH / "renders" / "Alien Ambient"
+    source_image_path = PATH / "images" / "Ethereal_Passenger" / "Upscaled" 
+    source_music_path = PATH / "music" / "Ethereal_Passenger" / "Elegidas" 
+    used_image_path = PATH / "images" / "Ethereal_Passenger" / "Upscaled" / "Usadas"
+    used_music_path = PATH / "music" / "Ethereal_Passenger" / "Elegidas" / "Usadas"
+    render_path = PATH / "renders" / "Ethereal_Passenger"
+    effect_path = PATH / 'effects'
+    effect_output_path = render_path
 
     # Render video
-    add_audio_to_image(
-        str(source_image_path / image_name), 
-        str(source_music_path / music_name), 
-        str(render_path / render_name), 
-        duration_min=duration_min)
-
-    # Move files to used path, including the Mubert license pdf
-    move_file(source_image_path / image_name, used_image_path)
-    move_file(source_music_path / music_name, used_music_path)
-    # Move the license together with the music
-    move_file(str(source_music_path / music_name).replace(".wav", ".pdf"), used_music_path)
-
+    # add_audio_to_image(
+    #     str(source_image_path / image_name), 
+    #     str(source_music_path / music_name), 
+    #     str(render_path / render_name), 
+    #     duration_min=duration_min)
 
     # Particle Effects
-    #
-    # video_path = None #"renders/test_track_short.mp4"
-    # effect_path = None #"effects/particles_9s_1080p.mkv"
-    # add_video_to_image(video_path, audio_path, output_path)
+    
+    video_path =  effect_output_path / effect_video_name
+
+    
+    add_effect_to_image(
+        str(source_image_path / image_name),
+        str(effect_path / effect_name),
+        str(effect_output_path / effect_video_name),
+        background_color=[1, 141, 34],
+        effect_color=[255, 229, 204]
+        )
+    
+    add_audio_to_video(
+        str(video_path),
+        str(source_music_path / music_name),
+        str(render_path / render_name),
+        duration_min=duration_min
+        )
+
+    # Move files to used path, including the Mubert license pdf
+    #move_file(source_image_path / image_name, used_image_path)
+    #move_file(source_music_path / music_name, used_music_path)
+    # Move the license together with the music
+    #move_file(str(source_music_path / music_name).replace(".wav", ".pdf"), used_music_path)
+
+
