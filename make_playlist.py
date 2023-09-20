@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from video import create_playlist_video, get_files_from_directory
+from video import create_playlist_video_with_effect, get_files_from_directory
 
 
 PATH = Path.cwd()
@@ -19,7 +19,7 @@ effect_kw = {
     "effect_color": [1, 0, 0]
 }
 
-output = create_playlist_video(image_files, music_files, resolution="FullHD")#, effect_kw=effect_kw)
+output = create_playlist_video_with_effect(image_files, music_files, resolution="FullHD", effect_kw=effect_kw)
 
 # Render the final video
 output.fps = 25

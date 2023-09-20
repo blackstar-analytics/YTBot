@@ -1,3 +1,4 @@
+import tempfile
 import os
 from pathlib import Path
 
@@ -250,7 +251,7 @@ def add_fadeout_to_video(videoclip, fadeout_duration):
     # return CompositeVideoClip([faded_video, blured_video])
     return faded_video
 
-def create_playlist_video(image_files, music_files, resolution="FullHD", effect_kw=None):
+def create_playlist_video(image_files, music_files, resolution="FullHD"):
     """
     Create a video that plays all audio tracks in sequence, 
     changing the image displayed with each new track.
@@ -276,16 +277,7 @@ def create_playlist_video(image_files, music_files, resolution="FullHD", effect_
         audio_clip = mpe.AudioFileClip(str(music_file))
         image_clip = image2clip(str(image_file), RESOLUTIONS[resolution])
         image_clip = image_clip.set_duration(audio_clip.duration)
-
-        # Add effect overlay
-        if effect_kw:
-            effect_clip = video2clip(str(effect_kw["effect_path"]), RESOLUTIONS[resolution])
-            image_clip = overlay_effect(
-                image_clip, 
-                effect_clip, 
-                effect_kw["background_color"], 
-                effect_kw["effect_color"])
-        
+      
         # Apply fade-in and fade-out effects to the video for transitions
         image_clip = add_fadein_to_video(image_clip, 2)
         image_clip = add_fadeout_to_video(image_clip, 2)
@@ -311,6 +303,84 @@ def create_playlist_video(image_files, music_files, resolution="FullHD", effect_
     final_audio = add_fadeout_to_audio(final_audio, 3)
 
     final_video = final_video.set_audio(final_audio)
+
+    return final_video
+
+def create_playlist_video_with_effect(image_files, music_files, resolution="FullHD", effect_kw=None):
+    """
+    Create a video that plays all audio tracks in sequence, 
+    changing the image displayed with each new track.
+    
+    Args:
+        image_files (list): List of images paths.
+        music_files (list): List of music track paths.
+        resolution (str): Desired video resolution (default is "FullHD").
+    
+    Returns:
+        final_video
+    """
+
+    # Ensure that the number of images matches the number of music tracks
+    if len(image_files) != len(music_files):
+        raise ValueError("The number of images must match the number of music tracks.")
+
+    temp_video_files = []
+
+    # Step 1: Apply effect loop to each image and save to temporary files
+    for image_file in image_files:
+        image_clip = image2clip(str(image_file), RESOLUTIONS[resolution])
+
+        # Add effect overlay
+        if effect_kw:
+            effect_clip = video2clip(str(effect_kw["effect_path"]), RESOLUTIONS[resolution])
+            image_clip = overlay_effect(
+                image_clip, 
+                effect_clip, 
+                effect_kw["background_color"], 
+                effect_kw["effect_color"])
+        
+        # Save to a temporary file
+        temp_file = tempfile.mktemp(suffix=".mp4")
+        image_clip.write_videofile(temp_file, threads=8)
+        temp_video_files.append(temp_file)
+
+    video_clips = []
+    audio_clips = []
+
+    # Step 2: Load temporary video clips, set duration, and apply fade-in and fade-out effects
+    for i, (temp_video_file, music_file) in enumerate(zip(temp_video_files, music_files)):
+        audio_clip = mpe.AudioFileClip(str(music_file))
+        video_clip = mpe.VideoFileClip(temp_video_file).set_duration(audio_clip.duration)
+
+        # Apply fade-in and fade-out effects to the video for transitions
+        video_clip = add_fadein_to_video(video_clip, 2)
+        video_clip = add_fadeout_to_video(video_clip, 2)
+
+        # Apply fade-in and fade-out to audio tracks, except beginning and end of playlist
+        if i != 0:
+            audio_clip = add_fadein_to_audio(audio_clip, 2)
+        if i != len(image_files) - 1:
+            audio_clip = add_fadeout_to_audio(audio_clip, 2)
+        
+        video_clips.append(video_clip)
+        audio_clips.append(audio_clip)
+
+    # Step 3: Concatenate all video and audio clips
+    final_video = concatenate_videoclips(video_clips)
+    final_audio = concatenate_audioclips(audio_clips)
+
+    # Apply fade-in effect at the start and fade-out effect at the end
+    final_video = add_fadein_to_video(final_video, 3)
+    final_audio = add_fadein_to_audio(final_audio, 3)
+    
+    final_video = add_fadeout_to_video(final_video, 3)
+    final_audio = add_fadeout_to_audio(final_audio, 3)
+
+    final_video = final_video.set_audio(final_audio)
+
+    # Cleanup temporary files
+    for temp_file in temp_video_files:
+        os.remove(temp_file)
 
     return final_video
 
