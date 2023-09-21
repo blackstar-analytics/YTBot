@@ -350,7 +350,7 @@ def create_playlist_video_with_effect(image_files, music_files, resolution="Full
     # Step 2: Load temporary video clips, set duration, and apply fade-in and fade-out effects
     for i, (temp_video_file, music_file) in enumerate(zip(temp_video_files, music_files)):
         audio_clip = mpe.AudioFileClip(str(music_file))
-        video_clip = mpe.VideoFileClip(temp_video_file).set_duration(audio_clip.duration)
+        video_clip = mpe.VideoFileClip(temp_video_file).loop(duration=audio_clip.duration)
 
         # Apply fade-in and fade-out effects to the video for transitions
         video_clip = add_fadein_to_video(video_clip, 2)
